@@ -96,7 +96,7 @@ def render_pertinent_cycle_structure(part):
     output = []
 
     for cycle_length, count in reversed(sorted(structure.items())):
-        i_cycle = '(' + '.'*cycle_length + ')'
+        i_cycle = '(' + r'\cdot'*cycle_length + ')'
         output.append(i_cycle*count)
 
     return ''.join(output)
@@ -120,23 +120,29 @@ def main():
     env = jinja2.Environment(loader=jinja2.FileSystemLoader("."))
     template = env.get_template("partitions.html.j2")
 
-    parts = partitions(options.n)
 
-    t_list = []
+    t_list_list = {}
 
-    for part in parts:
-        T = {}
-        T['part_long'] = render_part_long(part)
-        T['part_short'] = render_part_short(part)
-        T['young_frame'] = render_young_frame(part)
-        T['pertinent_cycle_structure'] = render_pertinent_cycle_structure(part)
-        T['number'] = number_in_conjugacy_class(part)
+    for n in range(options.n + 1):
+        parts = partitions(n)
 
-        t_list.append(T)
+        t_list = []
+
+        for part in parts:
+            T = {}
+            T['part_long'] = render_part_long(part)
+            T['part_short'] = render_part_short(part)
+            T['young_frame'] = render_young_frame(part)
+            T['pertinent_cycle_structure'] = render_pertinent_cycle_structure(part)
+            T['number'] = number_in_conjugacy_class(part)
+
+            t_list.append(T)
+
+        t_list_list[n] = t_list
 
     with open("partitions.html", "w") as f:
         f.write(template.render({
-            't_list': t_list,
+            't_list_list': t_list_list,
         }))
 
 

@@ -3,8 +3,14 @@
     <head>
         <meta charset="UTF-8" />
         <title></title>
+        <script type="text/javascript"
+src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+        </script>
     </head>
     <body>
+    {% for n, t_list in t_list_list.items() %}
+    <h1>Partitions of \(\mathcal S_{{ n }}\)</h1>
+
     <table border=1 cellspacing=0 cellpadding=2>
         <tr>
             <th>Long form</th>
@@ -17,15 +23,16 @@
         </tr>
         {% for row in t_list %}
         <tr>
-            <td>{{ row.part_long }}</td>
-            <td>{{ row.part_short }}</td>
+            <td>\({{ row.part_long }}\)</td>
+            <td>\({{ row.part_short }}\)</td>
             <td><pre>{{ row.young_frame }}</pre></td>
-            <td>{{ row.pertinent_cycle_structure }}</td>
+            <td>\({{ row.pertinent_cycle_structure }}\)</td>
             <td></td>
             <td></td>
             <td>{{ row.number }}</td>
         </tr>
         {% endfor %}
     </table>
+    {% endfor %}
     </body>
 </html>

@@ -30,7 +30,30 @@ def partitions(n):
     return parts
 
 def render_part_long(part):
-    return '[' + ', '.join(part) + ']'
+    return '[' + ', '.join([str(x) for x in part]) + ']'
+
+def render_part_short(part):
+    output = []
+    output.append('[')
+    powers = []
+    prev = None
+    power = 1
+
+    i = 0
+    while i != len(part):
+        lambda_ = part[i]
+        if lambda_ == 0:
+            break
+        power = len(list(filter(lambda x: x == lambda_, part)))
+        if power == 1:
+            powers.append('{}'.format(lambda_))
+        else:
+            powers.append('{}^{}'.format(lambda_, power))
+        i += power
+    output += ', '.join(powers)
+    output.append(']')
+
+    return ''.join(output)
 
 def main():
     options = _parse_args()
@@ -38,7 +61,7 @@ def main():
     parts = partitions(options.n)
 
     for part in parts:
-        print(render_part_long(part))
+        print(render_young_frame(part))
 
 def _parse_args():
     '''

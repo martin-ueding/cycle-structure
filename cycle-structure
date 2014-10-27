@@ -165,7 +165,7 @@ def render_conjugacy_class(part):
 
     lines = []
 
-    for chunk in cc:
+    for chunk in sorted(cc):
         output_chunk = []
         for cycle in chunk:
             output_chunk.append(

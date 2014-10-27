@@ -7,7 +7,7 @@ import argparse
 
 def insert_partitions(part, n, i, parts):
     print('  '*i, end='')
-    print(part, n, i, parts)
+    print(part, parts)
     free = n - sum(part)
 
     if i == n:

@@ -55,6 +55,16 @@ def render_part_short(part):
 
     return ''.join(output)
 
+def render_young_frame(part):
+    lines = []
+    n = sum(part)
+    for lambda_ in part:
+        if lambda_ == 0:
+            break
+        lines.append('#' * lambda_)
+
+    return '\n'.join(lines)
+
 def main():
     options = _parse_args()
 
@@ -62,6 +72,7 @@ def main():
 
     for part in parts:
         print(render_young_frame(part))
+        print()
 
 def _parse_args():
     '''

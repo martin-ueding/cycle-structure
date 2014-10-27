@@ -1,0 +1,56 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
+# Copyright © 2014 Martin Ueding <dev@martin-ueding.de>
+
+import argparse
+
+def insert_partitions(part, n, i, parts):
+    print('  '*i, end='')
+    print(part, n, i, parts)
+    free = n - sum(part)
+
+    if i == n:
+        if free != 0:
+            return
+        parts.append(list(part))
+    else:
+        max_element = free
+        if i != 0:
+            max_element = min(max_element, part[i-1])
+
+        for k in range(max_element + 1):
+            part[i] = k
+            insert_partitions(part, n, i + 1, parts)
+
+def partitions(n):
+    part = [0]*n
+    print(part)
+    parts = []
+
+    insert_partitions(part, n, 0, parts)
+
+    print()
+    print(parts)
+
+
+def main():
+    options = _parse_args()
+
+    partitions(options.n)
+
+def _parse_args():
+    '''
+    Parses the command line arguments.
+
+    :return: Namespace with arguments.
+    :rtype: Namespace
+    '''
+    parser = argparse.ArgumentParser(description='')
+    parser.add_argument('n', type=int)
+    options = parser.parse_args()
+
+    return options
+
+if __name__ == '__main__':
+    main()

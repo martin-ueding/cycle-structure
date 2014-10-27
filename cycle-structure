@@ -113,6 +113,19 @@ def number_in_conjugacy_class(part):
 
     return number
 
+def parity(part):
+    structure = pertinent_cycle_structure(part)
+
+    odd_count = 0
+
+    for cycle_length, count in structure.items():
+        # Cycles with an even length have negative party.
+        if cycle_length % 2 == 0:
+            odd_count += count
+
+    return '+' if odd_count % 2 == 0 else '-'
+
+
 
 def main():
     options = _parse_args()
@@ -135,6 +148,7 @@ def main():
             T['young_frame'] = render_young_frame(part)
             T['pertinent_cycle_structure'] = render_pertinent_cycle_structure(part)
             T['number'] = number_in_conjugacy_class(part)
+            T['parity'] = parity(part)
 
             t_list.append(T)
 

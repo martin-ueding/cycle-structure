@@ -100,11 +100,14 @@ def render_pertinent_cycle_structure(part):
     return ''.join(output)
 
 def number_in_conjugacy_class(part):
-    cycle_lengths = pertinent_cycle_structure(part)
+    structure = pertinent_cycle_structure(part)
 
     n = len(part)
 
     number = math.factorial(n)
+    for cycle_length, count in structure.items():
+        number //= cycle_length**count
+        number //= math.factorial(count)
 
     return number
 
@@ -117,6 +120,7 @@ def main():
     for part in parts:
         print(render_young_frame(part))
         print(render_pertinent_cycle_structure(part))
+        print(number_in_conjugacy_class(part))
 
 def _parse_args():
     '''

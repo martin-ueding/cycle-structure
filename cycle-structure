@@ -163,12 +163,18 @@ def conjugacy_class(part):
 def render_conjugacy_class(part):
     cc = conjugacy_class(part)
 
-    output = []
+    lines = []
 
     for chunk in cc:
-        output.append(str(chunk))
+        output_chunk = []
+        for cycle in chunk:
+            output_chunk.append(
+                '(' + ''.join([str(x) for x in cycle]) + ')'
+            )
 
-    return '</br>'.join(output)
+        lines.append(''.join(output_chunk))
+
+    return '</br>'.join(lines)
 
 
 

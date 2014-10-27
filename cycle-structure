@@ -65,6 +65,22 @@ def render_young_frame(part):
 
     return '\n'.join(lines)
 
+def render_pertinent_cycle_structure(part):
+    n = sum(part)
+    cycle_lengths = [0] * n
+
+    for i in range(n):
+        lambda_ = part[i]
+        for j in range(lambda_):
+            cycle_lengths[j] += 1
+
+    for cycle_length in cycle_lengths:
+        i_cycle = '(' + '.'*cycle_length + ')'
+        if cycle_length > 0:
+            print(i_cycle, end='')
+
+    print()
+
 def main():
     options = _parse_args()
 
@@ -72,7 +88,7 @@ def main():
 
     for part in parts:
         print(render_young_frame(part))
-        print()
+        render_pertinent_cycle_structure(part)
 
 def _parse_args():
     '''

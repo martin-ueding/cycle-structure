@@ -29,11 +29,16 @@ def partitions(n):
 
     return parts
 
+def render_part_long(part):
+    return '[' + ', '.join(part) + ']'
 
 def main():
     options = _parse_args()
 
-    partitions(options.n)
+    parts = partitions(options.n)
+
+    for part in parts:
+        print(render_part_long(part))
 
 def _parse_args():
     '''

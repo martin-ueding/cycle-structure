@@ -4,6 +4,7 @@
 # Copyright © 2014 Martin Ueding <dev@martin-ueding.de>
 
 import argparse
+import math
 
 def insert_partitions(part, n, i, parts):
     free = n - sum(part)
@@ -65,7 +66,7 @@ def render_young_frame(part):
 
     return '\n'.join(lines)
 
-def render_pertinent_cycle_structure(part):
+def pertinent_cycle_structure(part):
     n = sum(part)
     cycle_lengths = [0] * n
 
@@ -74,12 +75,39 @@ def render_pertinent_cycle_structure(part):
         for j in range(lambda_):
             cycle_lengths[j] += 1
 
-    for cycle_length in cycle_lengths:
-        i_cycle = '(' + '.'*cycle_length + ')'
-        if cycle_length > 0:
-            print(i_cycle, end='')
+    structure = {}
 
-    print()
+    i = 0
+    while i < n:
+        cycle_length = cycle_lengths[i]
+        if cycle_length == 0:
+            i += 1
+            continue
+        power = len(list(filter(lambda x: x == cycle_length, cycle_lengths)))
+        structure[cycle_length] = power
+        i += power
+
+    return structure
+
+def render_pertinent_cycle_structure(part):
+    structure = pertinent_cycle_structure(part)
+    output = []
+
+    for cycle_length, count in reversed(sorted(structure.items())):
+        i_cycle = '(' + '.'*cycle_length + ')'
+        output.append(i_cycle*count)
+
+    return ''.join(output)
+
+def number_in_conjugacy_class(part):
+    cycle_lengths = pertinent_cycle_structure(part)
+
+    n = len(part)
+
+    number = math.factorial(n)
+
+    return number
+
 
 def main():
     options = _parse_args()
@@ -88,7 +116,7 @@ def main():
 
     for part in parts:
         print(render_young_frame(part))
-        render_pertinent_cycle_structure(part)
+        print(render_pertinent_cycle_structure(part))
 
 def _parse_args():
     '''

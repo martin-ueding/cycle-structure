@@ -6,8 +6,6 @@
 import argparse
 
 def insert_partitions(part, n, i, parts):
-    print('  '*i, end='')
-    print(part, parts)
     free = n - sum(part)
 
     if i == n:
@@ -19,19 +17,17 @@ def insert_partitions(part, n, i, parts):
         if i != 0:
             max_element = min(max_element, part[i-1])
 
-        for k in range(max_element + 1):
+        for k in reversed(range(max_element + 1)):
             part[i] = k
             insert_partitions(part, n, i + 1, parts)
 
 def partitions(n):
     part = [0]*n
-    print(part)
     parts = []
 
     insert_partitions(part, n, 0, parts)
 
-    print()
-    print(parts)
+    return parts
 
 
 def main():

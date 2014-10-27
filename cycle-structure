@@ -6,6 +6,8 @@
 import argparse
 import math
 
+import jinja2
+
 def insert_partitions(part, n, i, parts):
     free = n - sum(part)
 
@@ -115,12 +117,28 @@ def number_in_conjugacy_class(part):
 def main():
     options = _parse_args()
 
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader("."))
+    template = env.get_template("partitions.html.j2")
+
     parts = partitions(options.n)
 
+    t_list = []
+
     for part in parts:
-        print(render_young_frame(part))
-        print(render_pertinent_cycle_structure(part))
-        print(number_in_conjugacy_class(part))
+        T = {}
+        T['part_long'] = render_part_long(part)
+        T['part_short'] = render_part_short(part)
+        T['young_frame'] = render_young_frame(part)
+        T['pertinent_cycle_structure'] = render_pertinent_cycle_structure(part)
+        T['number'] = number_in_conjugacy_class(part)
+
+        t_list.append(T)
+
+    with open("partitions.html", "w") as f:
+        f.write(template.render({
+            't_list': t_list,
+        }))
+
 
 def _parse_args():
     '''

@@ -4,6 +4,9 @@
 # Copyright © 2014 Martin Ueding <dev@martin-ueding.de>
 
 import argparse
+import collections
+import sys
+import itertools
 import math
 
 import jinja2
@@ -125,6 +128,52 @@ def parity(part):
 
     return '+' if odd_count % 2 == 0 else '-'
 
+def conjugacy_class(part):
+    structure = pertinent_cycle_structure(part)
+    n = sum(part)
+
+    permutations = itertools.permutations(range(1, n+1))
+
+    chunks = []
+
+    for permutation in permutations:
+        chunks_p = []
+        for cycle_length, count in reversed(sorted(structure.items())):
+            chunks_n = []
+            for i in range(count):
+                chunk = collections.deque(permutation[:cycle_length])
+                cycles = []
+                for i in range(len(chunk)):
+                    cycles.append(tuple(chunk))
+                    temp = chunk.popleft()
+                    chunk.append(temp)
+
+                chunk_min = min(cycles)
+                chunks_n.append(chunk_min)
+                permutation = permutation[cycle_length:]
+
+            chunks_n.sort()
+
+            chunks_p += chunks_n
+
+        chunks.append(tuple(chunks_p))
+
+    return set(chunks)
+
+def render_conjugacy_class(part):
+    cc = conjugacy_class(part)
+
+    output = []
+
+    for chunk in cc:
+        output.append(str(chunk))
+
+    return '</br>'.join(output)
+
+
+
+
+
 
 
 def main():
@@ -149,8 +198,11 @@ def main():
             T['pertinent_cycle_structure'] = render_pertinent_cycle_structure(part)
             T['number'] = number_in_conjugacy_class(part)
             T['parity'] = parity(part)
+            T['conjugacy_class'] = render_conjugacy_class(part)
+            conjugacy_class(part)
 
             t_list.append(T)
+
 
         t_list_list[n] = t_list
 

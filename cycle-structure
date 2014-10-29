@@ -94,8 +94,7 @@ def pertinent_cycle_structure(part):
 
     return structure
 
-def render_pertinent_cycle_structure(part):
-    structure = pertinent_cycle_structure(part)
+def render_pertinent_cycle_structure(structure):
     output = []
 
     for cycle_length, count in reversed(sorted(structure.items())):
@@ -104,11 +103,7 @@ def render_pertinent_cycle_structure(part):
 
     return ''.join(output)
 
-def number_in_conjugacy_class(part):
-    structure = pertinent_cycle_structure(part)
-
-    n = len(part)
-
+def number_in_conjugacy_class(structure, n):
     number = math.factorial(n)
     for cycle_length, count in structure.items():
         number //= cycle_length**count
@@ -116,9 +111,7 @@ def number_in_conjugacy_class(part):
 
     return number
 
-def parity(part):
-    structure = pertinent_cycle_structure(part)
-
+def parity(structure):
     odd_count = 0
 
     for cycle_length, count in structure.items():
@@ -128,10 +121,7 @@ def parity(part):
 
     return '+' if odd_count % 2 == 0 else '-'
 
-def conjugacy_class(part):
-    structure = pertinent_cycle_structure(part)
-    n = sum(part)
-
+def conjugacy_class(structure, n):
     permutations = itertools.permutations(range(1, n+1))
 
     chunks = []
@@ -160,8 +150,8 @@ def conjugacy_class(part):
 
     return set(chunks)
 
-def render_conjugacy_class(part):
-    cc = conjugacy_class(part)
+def render_conjugacy_class(structure, n):
+    cc = conjugacy_class(structure, n)
 
     lines = []
 
@@ -176,18 +166,11 @@ def render_conjugacy_class(part):
 
     return '</br>'.join(lines)
 
-
-
-
-
-
-
 def main():
     options = _parse_args()
 
     env = jinja2.Environment(loader=jinja2.FileSystemLoader("."))
     template = env.get_template("partitions.html.j2")
-
 
     t_list_list = {}
 
@@ -197,18 +180,18 @@ def main():
         t_list = []
 
         for part in parts:
+            structure = pertinent_cycle_structure(part)
+
             T = {}
             T['part_long'] = render_part_long(part)
             T['part_short'] = render_part_short(part)
             T['young_frame'] = render_young_frame(part)
-            T['pertinent_cycle_structure'] = render_pertinent_cycle_structure(part)
-            T['number'] = number_in_conjugacy_class(part)
-            T['parity'] = parity(part)
-            T['conjugacy_class'] = render_conjugacy_class(part)
-            conjugacy_class(part)
+            T['pertinent_cycle_structure'] = render_pertinent_cycle_structure(structure)
+            T['number'] = number_in_conjugacy_class(structure, n)
+            T['parity'] = parity(structure)
+            T['conjugacy_class'] = render_conjugacy_class(structure, n)
 
             t_list.append(T)
-
 
         t_list_list[n] = t_list
 
@@ -216,7 +199,6 @@ def main():
         f.write(template.render({
             't_list_list': t_list_list,
         }))
-
 
 def _parse_args():
     '''

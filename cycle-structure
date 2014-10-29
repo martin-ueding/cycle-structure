@@ -5,9 +5,10 @@
 
 import argparse
 import collections
-import sys
 import itertools
 import math
+import sys
+import datetime
 
 import jinja2
 
@@ -166,8 +167,33 @@ def render_conjugacy_class(structure, n):
 
     return '</br>'.join(lines)
 
+def compute_complete_table(n):
+    parts = partitions(n)
+
+    t_list = []
+
+    for part in parts:
+        structure = pertinent_cycle_structure(part)
+
+        T = {}
+        T['part_long'] = render_part_long(part)
+        T['part_short'] = render_part_short(part)
+        T['young_frame'] = render_young_frame(part)
+        T['pertinent_cycle_structure'] = render_pertinent_cycle_structure(structure)
+        T['number'] = number_in_conjugacy_class(structure, n)
+        T['parity'] = parity(structure)
+        T['conjugacy_class'] = render_conjugacy_class(structure, n)
+
+        t_list.append(T)
+
+    return t_list
+
 def main():
     options = _parse_args()
+
+    if options.benchmark:
+        benchmark(options.n)
+        sys.exit(0)
 
     env = jinja2.Environment(loader=jinja2.FileSystemLoader("."))
     template = env.get_template("partitions.html.j2")
@@ -175,30 +201,24 @@ def main():
     t_list_list = {}
 
     for n in range(1, options.n + 1):
-        parts = partitions(n)
-
-        t_list = []
-
-        for part in parts:
-            structure = pertinent_cycle_structure(part)
-
-            T = {}
-            T['part_long'] = render_part_long(part)
-            T['part_short'] = render_part_short(part)
-            T['young_frame'] = render_young_frame(part)
-            T['pertinent_cycle_structure'] = render_pertinent_cycle_structure(structure)
-            T['number'] = number_in_conjugacy_class(structure, n)
-            T['parity'] = parity(structure)
-            T['conjugacy_class'] = render_conjugacy_class(structure, n)
-
-            t_list.append(T)
-
-        t_list_list[n] = t_list
+        t_list_list[n] = compute_complete_table(n)
 
     with open("partitions.html", "w") as f:
         f.write(template.render({
             't_list_list': t_list_list,
         }))
+
+def benchmark(max_n):
+    for n in range(max_n):
+        start = datetime.datetime.now()
+        print(n)
+        compute_complete_table(n)
+        end = datetime.datetime.now()
+
+        print(end - start)
+
+        if end - start > datetime.timedelta(seconds=1):
+            break
 
 def _parse_args():
     '''
@@ -209,6 +229,7 @@ def _parse_args():
     '''
     parser = argparse.ArgumentParser(description='')
     parser.add_argument('n', type=int)
+    parser.add_argument('--benchmark', action='store_true')
     options = parser.parse_args()
 
     return options
